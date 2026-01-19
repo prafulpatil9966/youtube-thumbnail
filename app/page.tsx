@@ -79,7 +79,7 @@ export default function StreamManager() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-red-500">DB Record Manager</h1>
+        <h1 className="text-3xl font-bold mb-6 text-red-500">Stream Info Manager</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-xl">
           <div>
