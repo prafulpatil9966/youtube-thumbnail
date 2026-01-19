@@ -1,65 +1,98 @@
-import Image from "next/image";
+"use client";
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+// Correct import for Next.js 13/14/15 App Router
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function StreamManager() {
+  const [title, setTitle] = useState<string>('');
+  const [desc, setDesc] = useState<string>('');
+  // Correctly typing the file state
+  const [image, setImage] = useState<File | null>(null);
+
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let base64Image = "";
+
+    // Convert image to Base64 string if it exists
+    if (image) {
+      base64Image = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(image);
+      });
+    }
+
+    const newRecord = {
+      id: Date.now(),
+      title,
+      desc,
+      thumbnail: base64Image, // Save the string here
+      date: new Date().toLocaleDateString()
+    };
+
+    const savedData = localStorage.getItem('streamRecords');
+    const existingRecords = savedData ? JSON.parse(savedData) : [];
+    localStorage.setItem('streamRecords', JSON.stringify([newRecord, ...existingRecords]));
+
+    router.push('/dashboard');
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-red-500">DB Record Manager</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-xl">
+          <div>
+            <label className="block mb-1 font-medium text-gray-300">Stream Title</label>
+            <input
+              type="text"
+              required
+              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+              placeholder="Enter title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-gray-300">Description</label>
+            <textarea
+              rows={4}
+              required
+              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+              placeholder="Paste description here..."
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-gray-300">Thumbnail Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
+              onChange={handleFileChange}
+            />
+          </div>
+
+          <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-3 rounded font-bold transition duration-200">
+            Save Record
+          </button>
+        </form>
+
+        <div className="block mb-1 font-medium text-2xl mt-3 text-center cursor-pointer text-gray-300" onClick={() => { router.push('/dashboard'); }}>Dashboard</div>
+      </div>
     </div>
   );
 }
