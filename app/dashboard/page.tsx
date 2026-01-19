@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
 
+export const dynamic = 'force-dynamic';
+
 interface StreamRecord {
     id: number;
     title: string;
