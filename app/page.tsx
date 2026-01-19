@@ -1,131 +1,77 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-// Correct import for Next.js 13/14/15 App Router
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabase';
+import Link from 'next/link';
 
-export default function StreamManager() {
-  const [title, setTitle] = useState<string>('');
-  const [desc, setDesc] = useState<string>('');
-  // Correctly typing the file state
-  const [image, setImage] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      let base64Image = ""; 
-
-      // Convert image to Base64 string if it exists
-      if (image) {
-        base64Image = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(image);
-        });
-      }
-
-      // Save to Supabase
-      const { data, error } = await supabase
-        .from('streamrecords')
-        .insert([
-          {
-            title,
-            desc,
-            thumbnail: base64Image,
-            date: new Date().toISOString()
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error saving to Supabase:', error);
-        alert('Failed to save record. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      // Also save to localStorage as backup
-      const newRecord = {
-        id: Date.now(),
-        title,
-        desc,
-        thumbnail: base64Image,
-        date: new Date().toLocaleDateString()
-      };
-      const savedData = localStorage.getItem('streamRecords');
-      const existingRecords = savedData ? JSON.parse(savedData) : [];
-      localStorage.setItem('streamRecords', JSON.stringify([newRecord, ...existingRecords]));
-
-      // Redirect to dashboard
-      router.push('/dashboard');
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Failed to save record');
-      setLoading(false);
-    }
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
-  };
-
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-red-500">Stream Info Manager</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        {/* Hero Section */}
+        <div className="text-center mb-20">
+          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+            YouTube Thumbnail Manager
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Create, manage, and organize your YouTube thumbnails with ease. 
+            Store titles, descriptions, and images all in one place.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/create"
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-200 shadow-lg hover:shadow-xl"
+            >
+              Create Thumbnail
+            </Link>
+            <Link
+              href="/dashboard"
+              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-200 shadow-lg hover:shadow-xl"
+            >
+              View All
+            </Link>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-xl">
-          <div>
-            <label className="block mb-1 font-medium text-gray-300">Stream Title</label>
-            <input
-              type="text"
-              required
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
-              placeholder="Enter title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+        {/* Features Section */}
+        <div className="grid md:grid-cols-3 gap-8 mb-20">
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 hover:border-red-500 transition">
+            <div className="text-4xl mb-4">🎨</div>
+            <h3 className="text-xl font-bold mb-3 text-red-500">Create Thumbnails</h3>
+            <p className="text-gray-400">
+              Upload and store your YouTube thumbnail images with associated metadata.
+            </p>
           </div>
 
-          <div>
-            <label className="block mb-1 font-medium text-gray-300">Description</label>
-            <textarea
-              rows={4}
-              required
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
-              placeholder="Paste description here..."
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-            ></textarea>
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 hover:border-red-500 transition">
+            <div className="text-4xl mb-4">📝</div>
+            <h3 className="text-xl font-bold mb-3 text-red-500">Manage Content</h3>
+            <p className="text-gray-400">
+              Store titles, descriptions, and dates for easy reference and copying.
+            </p>
           </div>
 
-          <div>
-            <label className="block mb-1 font-medium text-gray-300">Thumbnail Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
-              onChange={handleFileChange}
-            />
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 hover:border-red-500 transition">
+            <div className="text-4xl mb-4">☁️</div>
+            <h3 className="text-xl font-bold mb-3 text-red-500">Cloud Storage</h3>
+            <p className="text-gray-400">
+              Access your thumbnails from anywhere with secure cloud storage.
+            </p>
           </div>
+        </div>
 
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 py-3 rounded font-bold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* Stats Section */}
+        <div className="bg-gray-800 rounded-xl border border-gray-700 p-12 text-center">
+          <h2 className="text-3xl font-bold mb-6 text-white">
+            Streamline Your YouTube Workflow
+          </h2>
+          <p className="text-gray-400 max-w-2xl mx-auto mb-8">
+            Save time and stay organized with a dedicated space for all your YouTube thumbnail assets and metadata.
+          </p>
+          <Link
+            href="/create"
+            className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
           >
-            {loading ? 'Saving...' : 'Save Record'}
-          </button>
-        </form>
-
-        <div className="block mb-1 font-medium text-2xl mt-3 text-center cursor-pointer text-gray-300" onClick={() => { router.push('/dashboard'); }}>Dashboard</div>
+            Get Started →
+          </Link>
+        </div>
       </div>
     </div>
   );
