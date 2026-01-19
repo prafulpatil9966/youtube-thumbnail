@@ -47,8 +47,19 @@ export default function Dashboard() {
         }
     };
 
-    // --- NEW: Delete Function ---
+    // --- NEW: Delete Function with Password Protection ---
     const deleteRecord = async (id: number) => {
+        // Prompt for password
+        const password = window.prompt("Enter password to delete this record:");
+        
+        // Read password from environment variable
+        const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "praful123";
+        
+        if (password !== ADMIN_PASSWORD) {
+            alert("Incorrect password!");
+            return;
+        }
+        
         if (window.confirm("Are you sure you want to delete this record?")) {
             try {
                 // Delete from Supabase
@@ -69,6 +80,8 @@ export default function Dashboard() {
                 
                 // Also update localStorage as backup
                 localStorage.setItem('streamRecords', JSON.stringify(updatedRecords));
+                
+                alert('Record deleted successfully!');
             } catch (err) {
                 console.error('Error:', err);
                 alert('Failed to delete record');
