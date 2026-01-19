@@ -52,15 +52,15 @@ export default function Dashboard() {
     const deleteRecord = async (id: number) => {
         // Prompt for password
         const password = window.prompt("Enter password to delete this record:");
-        
+
         // Read password from environment variable
         const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "praful123";
-        
+
         if (password !== ADMIN_PASSWORD) {
             alert("Incorrect password!");
             return;
         }
-        
+
         if (window.confirm("Are you sure you want to delete this record?")) {
             try {
                 // Delete from Supabase
@@ -78,10 +78,10 @@ export default function Dashboard() {
                 // Update state to refresh UI
                 const updatedRecords = records.filter(record => record.id !== id);
                 setRecords(updatedRecords);
-                
+
                 // Also update localStorage as backup
                 localStorage.setItem('streamRecords', JSON.stringify(updatedRecords));
-                
+
                 alert('Record deleted successfully!');
             } catch (err) {
                 console.error('Error:', err);
@@ -92,14 +92,19 @@ export default function Dashboard() {
 
     const downloadImage = (base64Data?: string, fileName?: string) => {
         if (!base64Data) return;
-        debugger
+
+        const firstWord =
+            fileName?.trim().split(/\s+/)[0] || 'thumbnail';
+
         const link = document.createElement('a');
         link.href = base64Data;
-        link.download = `thumbnail.png`;
+        link.download = `${firstWord}.png`;
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
+
 
     const copyToClipboard = (text: string, label: string) => {
         navigator.clipboard.writeText(text);
@@ -126,7 +131,7 @@ export default function Dashboard() {
                             <div key={item.id} className="bg-gray-800 p-6 rounded-xl border border-gray-700 flex flex-col md:flex-row gap-6 shadow-lg relative group">
 
                                 {/* Thumbnail Section */}
-                                <div className="relative w-full md:w-64 flex-shrink-0">
+                                <div className="relative w-full md:w-64 shrink-0">
                                     {item.thumbnail ? (
                                         <div className="relative aspect-video rounded-lg overflow-hidden border border-gray-600 bg-black">
                                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
