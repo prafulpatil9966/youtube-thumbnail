@@ -18,7 +18,7 @@ export default function StreamManager() {
     setLoading(true);
 
     try {
-      let base64Image = "";
+      let base64Image = ""; 
 
       // Convert image to Base64 string if it exists
       if (image) {
