@@ -15,6 +15,9 @@ interface StreamRecord {
 export default function Dashboard() {
     const [records, setRecords] = useState<StreamRecord[]>([]);
     const [loading, setLoading] = useState(true);
+    const [editingRecord, setEditingRecord] = useState<StreamRecord | null>(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [editDesc, setEditDesc] = useState('');
     const STREAM_END_TEXT = "ggs, live on YT if anyone wants to stop by — PatilPlaysYT";
 
 
@@ -90,6 +93,69 @@ export default function Dashboard() {
         }
     };
 
+    // --- NEW: Edit Function with Password Protection ---
+    const startEdit = (record: StreamRecord) => {
+        // Prompt for password
+        const password = window.prompt("Enter password to edit this record:");
+
+        // Read password from environment variable
+        const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "praful123";
+
+        if (password !== ADMIN_PASSWORD) {
+            alert("Incorrect password!");
+            return;
+        }
+
+        // Set editing state
+        setEditingRecord(record);
+        setEditTitle(record.title);
+        setEditDesc(record.desc);
+    };
+
+    const cancelEdit = () => {
+        setEditingRecord(null);
+        setEditTitle('');
+        setEditDesc('');
+    };
+
+    const saveEdit = async () => {
+        if (!editingRecord) return;
+
+        try {
+            // Update in Supabase
+            const { error } = await supabase
+                .from('streamrecords')
+                .update({
+                    title: editTitle,
+                    desc: editDesc,
+                })
+                .eq('id', editingRecord.id);
+
+            if (error) {
+                console.error('Error updating record:', error);
+                alert('Failed to update record');
+                return;
+            }
+
+            // Update state
+            const updatedRecords = records.map(record =>
+                record.id === editingRecord.id
+                    ? { ...record, title: editTitle, desc: editDesc }
+                    : record
+            );
+            setRecords(updatedRecords);
+
+            // Update localStorage
+            localStorage.setItem('streamRecords', JSON.stringify(updatedRecords));
+
+            alert('Record updated successfully!');
+            cancelEdit();
+        } catch (err) {
+            console.error('Error:', err);
+            alert('Failed to update record');
+        }
+    };
+
     const downloadImage = (base64Data?: string, fileName?: string) => {
         if (!base64Data) return;
 
@@ -149,35 +215,85 @@ export default function Dashboard() {
 
                                 {/* Content Section */}
                                 <div className="flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h2 className="text-2xl font-bold text-white leading-tight pr-8">{item.title}</h2>
-
-                                            {/* --- DELETE BUTTON (Top Right) --- */}
-                                            <button
-                                                onClick={() => deleteRecord(item.id)}
-                                                className="text-gray-500 hover:text-red-500 transition-colors p-1"
-                                                title="Delete Record"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                            </button>
+                                    {editingRecord?.id === item.id ? (
+                                        /* Edit Mode */
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block mb-1 text-sm font-medium text-gray-300">Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={editTitle}
+                                                    onChange={(e) => setEditTitle(e.target.value)}
+                                                    className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block mb-1 text-sm font-medium text-gray-300">Description</label>
+                                                <textarea
+                                                    rows={4}
+                                                    value={editDesc}
+                                                    onChange={(e) => setEditDesc(e.target.value)}
+                                                    className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+                                                ></textarea>
+                                            </div>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={saveEdit}
+                                                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm font-bold transition"
+                                                >
+                                                    💾 Save
+                                                </button>
+                                                <button
+                                                    onClick={cancelEdit}
+                                                    className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm font-bold transition"
+                                                >
+                                                    ✕ Cancel
+                                                </button>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-400 text-sm whitespace-pre-wrap line-clamp-3 mb-4">{item.desc}</p>
-                                        <p>Stream End:</p><p className="text-gray-400 text-sm whitespace-pre-wrap line-clamp-3 mb-4">{STREAM_END_TEXT}</p>
-                                    </div>
+                                    ) : (
+                                        /* View Mode */
+                                        <>
+                                            <div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h2 className="text-2xl font-bold text-white leading-tight pr-8">{item.title}</h2>
 
-                                    <div className="flex flex-wrap gap-3">
-                                        <button onClick={() => downloadImage(item.thumbnail, item.title)} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
-                                            ⬇ Image
-                                        </button>
-                                        <button onClick={() => copyToClipboard(item.title, 'Title')} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
-                                            📋 Copy Title
-                                        </button>
-                                        <button onClick={() => copyToClipboard(item.desc, 'Description')} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
-                                            📋 Copy Desc
-                                        </button>
-                                        <span className="text-[10px] self-center font-mono text-gray-500 ml-auto">{item.date}</span>
-                                    </div>
+                                                    {/* --- EDIT & DELETE BUTTONS (Top Right) --- */}
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => startEdit(item)}
+                                                            className="text-gray-500 hover:text-blue-500 transition-colors p-1"
+                                                            title="Edit Record"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteRecord(item.id)}
+                                                            className="text-gray-500 hover:text-red-500 transition-colors p-1"
+                                                            title="Delete Record"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <p className="text-gray-400 text-sm whitespace-pre-wrap line-clamp-3 mb-4">{item.desc}</p>
+                                                <p>Stream End:</p><p className="text-gray-400 text-sm whitespace-pre-wrap line-clamp-3 mb-4">{STREAM_END_TEXT}</p>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-3">
+                                                <button onClick={() => downloadImage(item.thumbnail, item.title)} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
+                                                    ⬇ Image
+                                                </button>
+                                                <button onClick={() => copyToClipboard(item.title, 'Title')} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
+                                                    📋 Copy Title
+                                                </button>
+                                                <button onClick={() => copyToClipboard(item.desc, 'Description')} className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
+                                                    📋 Copy Desc
+                                                </button>
+                                                <span className="text-[10px] self-center font-mono text-gray-500 ml-auto">{item.date}</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
                             </div>
