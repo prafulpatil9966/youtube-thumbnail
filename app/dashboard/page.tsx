@@ -180,20 +180,6 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-gray-900 text-white p-8">
             <h3 className='font-bold text-2xl text-red-500'>Description</h3>
-            <p className='mt-5 mb-10'>
-                Between Games & Life
-                <br />
-                <br />
-                Welcome to patilplaysyt — where gaming meets real life.
-                <br />
-                FPS gameplay, ranked grinds, chill streams, and honest moments.
-                <br />
-                Some days are clutches, some days are learning — all part of the journey.
-                <br />
-                <br />
-                Subscribe and join the grind, between games & life.
-
-            </p>
             <div className="max-w-5xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-red-500">My Thumbnails</h1>
