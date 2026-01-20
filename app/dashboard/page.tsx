@@ -179,7 +179,6 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-8">
-            <h3 className='font-bold text-2xl text-red-500'>Description</h3>
             <div className="max-w-5xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-red-500">My Thumbnails</h1>
