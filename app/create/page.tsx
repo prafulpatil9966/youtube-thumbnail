@@ -77,17 +77,17 @@ export default function CreateThumbnail() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 md:p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-red-500">Create New Thumbnail</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-red-500">Create New Thumbnail</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-xl">
+        <form onSubmit={handleSubmit} className="space-y-4 bg-gray-800 p-4 sm:p-6 rounded-lg shadow-xl">
           <div>
-            <label className="block mb-1 font-medium text-gray-300">Stream Title</label>
+            <label className="block mb-1 font-medium text-gray-300 text-sm sm:text-base">Stream Title</label>
             <input
               type="text"
               required
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+              className="w-full p-2 sm:p-3 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white text-sm sm:text-base"
               placeholder="Enter title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -95,11 +95,11 @@ export default function CreateThumbnail() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-gray-300">Description</label>
+            <label className="block mb-1 font-medium text-gray-300 text-sm sm:text-base">Description</label>
             <textarea
               rows={4}
               required
-              className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white"
+              className="w-full p-2 sm:p-3 rounded bg-gray-700 border border-gray-600 focus:border-red-500 outline-none text-white text-sm sm:text-base"
               placeholder="Paste description here..."
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
@@ -107,11 +107,11 @@ export default function CreateThumbnail() {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium text-gray-300">Thumbnail Image</label>
+            <label className="block mb-1 font-medium text-gray-300 text-sm sm:text-base">Thumbnail Image</label>
             <input
               type="file"
               accept="image/*"
-              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
+              className="block w-full text-xs sm:text-sm text-gray-400 file:mr-4 file:py-2 file:px-3 sm:file:px-4 file:rounded file:border-0 file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
               onChange={handleFileChange}
             />
           </div>
@@ -119,7 +119,7 @@ export default function CreateThumbnail() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 py-3 rounded font-bold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-red-600 hover:bg-red-700 py-3 sm:py-3 rounded font-bold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             {loading ? 'Saving...' : 'Save Thumbnail'}
           </button>
