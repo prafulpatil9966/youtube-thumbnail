@@ -35,17 +35,13 @@ export default function Dashboard() {
 
             if (error) {
                 console.error('Error fetching records:', error);
-                // Fallback to localStorage if Supabase fails
-                const savedData = JSON.parse(localStorage.getItem('streamRecords') || '[]');
-                setRecords(savedData);
+                setRecords([]);
             } else {
                 setRecords(data || []);
             }
         } catch (err) {
             console.error('Error:', err);
-            // Fallback to localStorage
-            const savedData = JSON.parse(localStorage.getItem('streamRecords') || '[]');
-            setRecords(savedData);
+            setRecords([]);
         } finally {
             setLoading(false);
         }
@@ -74,7 +70,7 @@ export default function Dashboard() {
 
                 if (error) {
                     console.error('Error deleting record:', error);
-                    alert('Failed to delete record');
+                    alert('Failed to delete record: ' + error.message);
                     return;
                 }
 
@@ -82,13 +78,10 @@ export default function Dashboard() {
                 const updatedRecords = records.filter(record => record.id !== id);
                 setRecords(updatedRecords);
 
-                // Also update localStorage as backup
-                localStorage.setItem('streamRecords', JSON.stringify(updatedRecords));
-
-                alert('Record deleted successfully!');
+                // Success - record deleted
             } catch (err) {
                 console.error('Error:', err);
-                alert('Failed to delete record');
+                alert('Failed to delete record: ' + (err instanceof Error ? err.message : String(err)));
             }
         }
     };
@@ -133,7 +126,7 @@ export default function Dashboard() {
 
             if (error) {
                 console.error('Error updating record:', error);
-                alert('Failed to update record');
+                alert('Failed to update record: ' + error.message);
                 return;
             }
 
@@ -145,14 +138,11 @@ export default function Dashboard() {
             );
             setRecords(updatedRecords);
 
-            // Update localStorage
-            localStorage.setItem('streamRecords', JSON.stringify(updatedRecords));
-
-            alert('Record updated successfully!');
+            // Success - close edit mode
             cancelEdit();
         } catch (err) {
             console.error('Error:', err);
-            alert('Failed to update record');
+            alert('Failed to update record: ' + (err instanceof Error ? err.message : String(err)));
         }
     };
 

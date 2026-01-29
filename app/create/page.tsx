@@ -44,28 +44,16 @@ export default function CreateThumbnail() {
 
       if (error) {
         console.error('Error saving to Supabase:', error);
-        alert('Failed to save record. Please try again.');
+        alert('Failed to save record: ' + error.message);
         setLoading(false);
         return;
       }
-
-      // Also save to localStorage as backup
-      const newRecord = {
-        id: Date.now(),
-        title,
-        desc,
-        thumbnail: base64Image,
-        date: new Date().toLocaleDateString()
-      };
-      const savedData = localStorage.getItem('streamRecords');
-      const existingRecords = savedData ? JSON.parse(savedData) : [];
-      localStorage.setItem('streamRecords', JSON.stringify([newRecord, ...existingRecords]));
 
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (err) {
       console.error('Error:', err);
-      alert('Failed to save record');
+      alert('Failed to save record: ' + (err instanceof Error ? err.message : String(err)));
       setLoading(false);
     }
   };
