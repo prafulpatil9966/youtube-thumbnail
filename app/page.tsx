@@ -33,16 +33,16 @@ export default function Home() {
         {/* Quick Actions */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-4">
           <Link
-            href="/create"
+            href="/thumbnails"
             className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-lg transition duration-200 shadow-lg hover:shadow-xl text-center"
           >
-            + Create New Stream
+            📸 Manage Thumbnails
           </Link>
           <Link
-            href="/dashboard"
+            href="/highlights"
             className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-lg transition duration-200 shadow-lg hover:shadow-xl text-center"
           >
-            View Saved Streams
+            ⭐ Stream Highlights
           </Link>
         </div>
 

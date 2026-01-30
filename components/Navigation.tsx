@@ -9,8 +9,8 @@ export default function Navigation() {
 
     const navLinks = [
         { href: '/', label: 'Home' },
-        { href: '/create', label: 'Create Thumbnail' },
-        { href: '/dashboard', label: 'View Thumbnails' },
+        { href: '/thumbnails', label: 'Thumbnails' },
+        { href: '/highlights', label: 'Highlights' },
     ];
 
     return (
