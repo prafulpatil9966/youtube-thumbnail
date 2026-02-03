@@ -11,7 +11,10 @@ export default function Home() {
             PatilPlaysYT
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
-            Between Games & Life — FPS gameplay, ranked grinds, and honest moments.
+            ggs, live on YT if anyone wants to stop by — PatilPlaysYT
+          </p>
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+            ggs, thanks for the game — live on YT: PatilPlaysYT
           </p>
 
           {/* YouTube Channel Link */}
