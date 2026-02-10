@@ -11,6 +11,7 @@ export default function Navigation() {
         { href: '/', label: 'Home' },
         { href: '/thumbnails', label: 'Thumbnails' },
         { href: '/highlights', label: 'Highlights' },
+        { href: '/subcount', label: 'Sub Count' },
     ];
 
     return (

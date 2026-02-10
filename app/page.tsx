@@ -47,6 +47,12 @@ export default function Home() {
           >
             ⭐ Stream Highlights
           </Link>
+          <Link
+            href="/subcount"
+            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-lg transition duration-200 shadow-lg hover:shadow-xl text-center"
+          >
+            📈 Sub Count Posts
+          </Link>
         </div>
 
         {/* About Section */}
