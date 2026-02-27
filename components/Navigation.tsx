@@ -10,8 +10,7 @@ export default function Navigation() {
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '/thumbnails', label: 'Thumbnails' },
-        { href: '/highlights', label: 'Highlights' },
-        { href: '/subcount', label: 'Sub Count' },
+        { href: '/lineups', label: 'Lineups' },
     ];
 
     return (
