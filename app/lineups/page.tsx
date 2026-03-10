@@ -195,25 +195,24 @@ export default function LineupsPage() {
     const uploadImage = async (file: File): Promise<string | null> => {
         try {
             setUploading(true);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-            const filePath = `lineups/${fileName}`;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
 
-            const { error: uploadError, data } = await supabase.storage
-                .from('lineup-images')
-                .upload(filePath, file);
-
-            if (uploadError) {
-                console.error('Upload error:', uploadError);
-                alert('Failed to upload image: ' + uploadError.message);
+            if (!uploadRes.ok) {
+                const errorData = await uploadRes.json();
+                console.error('Upload error:', errorData);
+                alert('Failed to upload image: ' + (errorData.error || 'Unknown error'));
                 return null;
             }
 
-            const { data: { publicUrl } } = supabase.storage
-                .from('lineup-images')
-                .getPublicUrl(filePath);
-
-            return publicUrl;
+            const uploadData = await uploadRes.json();
+            return uploadData.url;
         } catch (err) {
             console.error('Error uploading image:', err);
             alert('Failed to upload image');

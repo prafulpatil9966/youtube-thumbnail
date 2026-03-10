@@ -18,25 +18,34 @@ export default function CreateThumbnail() {
     setLoading(true);
 
     try {
-      let base64Image = ""; 
+      let imageUrl = ""; 
 
-      // Convert image to Base64 string if it exists
+      // Upload to Cloudinary if image exists
       if (image) {
-        base64Image = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(image);
+        const formData = new FormData();
+        formData.append('file', image);
+        
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
         });
+        
+        if (!uploadRes.ok) {
+          throw new Error('Failed to upload image to Cloudinary');
+        }
+        
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url;
       }
 
-      // Save to Supabase
+      // Save to Supabase with Cloudinary URL
       const { data, error } = await supabase
         .from('streamrecords')
         .insert([
           {
             title,
             desc,
-            thumbnail: base64Image,
+            thumbnail: imageUrl,
             date: new Date().toISOString()
           }
         ])
